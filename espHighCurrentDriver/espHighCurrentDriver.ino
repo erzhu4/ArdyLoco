@@ -1,12 +1,10 @@
-/*
- * ESP8266 Servo Motor Control With Web Server 
- * https://circuits4you.com
- */
-
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
-#include "indexespl298n.h"
+// #include <SPI.h>
+// #include <WiFiNINA.h>
+
+#include "indexespHighCurrent.h"
 
 #define LED 2
 
@@ -17,15 +15,17 @@ const char *password = "Bitch123";
 const int acceleration = 50;
 const int decceleration = 50;
 
-const int minimumThrottle = 45;
+const int minimumThrottle = 0;
 const int maxThrottle = 255;
 
 
 const int offSet = 0;
 const int initialThrottlePos = 0;
 
-const int IN1 = D1;
-const int IN2 = D2;
+const int IN1 = D0;
+const int IN2 = D1;
+const int EN1 = D2;
+const int EN2 = D3;
 
 bool dir = false;
 
@@ -138,7 +138,9 @@ void setup() {
   server.on("/",handleRoot);
   server.on("/setPOS",handleThrottle); //Sets servo position from Web request
   server.on("/setDIR",handleDirection);
-  server.begin();  
+  server.begin();
+  digitalWrite(EN1, HIGH);
+  digitalWrite(EN2, HIGH);
 }
 
 //================================================

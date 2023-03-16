@@ -1,30 +1,43 @@
+const int RPWM = 3;
+const int LPWM = 5;
+const int R_EN = 6;
+const int L_EN = 7;
+
+const int alwaysHigh = 8;
+
+// const int RPWM = D1;
+// const int LPWM = D2;
+// const int R_EN = D3;
+// const int L_EN = D4;
+
+
 void setup() {
   // put your setup code here, to run once:
-  pinMode(D1, OUTPUT);
+  Serial.begin(115200);
+  Serial.println();
+  Serial.println("SET UP!!!");
+  pinMode(RPWM, OUTPUT);
+  pinMode(LPWM, OUTPUT);
+  pinMode(R_EN, OUTPUT);
+  pinMode(L_EN, OUTPUT);
+  pinMode(alwaysHigh, OUTPUT);
+  digitalWrite(alwaysHigh, HIGH);
+  digitalWrite(R_EN, HIGH);
+  digitalWrite(L_EN, HIGH);
+  Serial.println("SET UP END!!!");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  analogWrite(D1, 0);
-  delay(100);
-  analogWrite(D1, 25);
-  delay(100);
-  analogWrite(D1, 50);
-  delay(100);
-  analogWrite(D1, 75);
-  delay(100);
-  analogWrite(D1, 100);
-  delay(100);
-  analogWrite(D1, 125);
-  delay(100);
-  analogWrite(D1, 150);
-  delay(100);
-  analogWrite(D1, 175);
-  delay(100);
-  analogWrite(D1, 200);
-  delay(100);
-  analogWrite(D1, 225);
-  delay(100);
-  analogWrite(D1, 255);
-  delay(100);
+  Serial.println("LOOP~!!!~~~!");
+  for (int i = 0; i < 200; i++){
+    analogWrite(RPWM, i);
+    analogWrite(LPWM, 0);
+    delay(20);
+  }
+  Serial.println("Loop Back");
+  for (int i = 200; i > 0; i--){
+    analogWrite(RPWM, i);
+    analogWrite(LPWM, 0);
+    delay(20);
+  }
 }
