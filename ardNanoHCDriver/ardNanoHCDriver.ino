@@ -28,6 +28,9 @@ const int R_EN = 4;
 const int L_EN = 5;
 const int alwaysHigh = 6;
 
+const int l1 = 8;
+const int l2 = 9;
+
 bool dir = false;
 
 WiFiServer server(80);
@@ -114,6 +117,18 @@ void handleDirection(){
     dir = !dir;
 }
 
+void turnOnLights(){
+    Serial.print("turnOnLights");
+    digitalWrite(l1, HIGH);
+    digitalWrite(l2, HIGH);
+}
+
+void turnOffLights(){
+    Serial.print("turnOnLights");
+    digitalWrite(l1, LOW);
+    digitalWrite(l2, LOW);
+}
+
 
 //================================================
 void handleThrottle(String POS){
@@ -145,9 +160,13 @@ void setup() {
     pinMode(R_EN, OUTPUT);
     pinMode(L_EN, OUTPUT);
     pinMode(alwaysHigh, OUTPUT);
+    pinMode(l1, OUTPUT);
+    pinMode(l2, OUTPUT);
     digitalWrite(alwaysHigh, HIGH);
     digitalWrite(R_EN, HIGH);
     digitalWrite(L_EN, HIGH);
+    digitalWrite(l1, LOW);
+    digitalWrite(l2, LOW);
 
     if (WiFi.status() == WL_NO_MODULE) {
         Serial.println("Communication with WiFi module failed!");
@@ -208,6 +227,18 @@ void loop() {
                     } else {
                         sendResponseToClient(client, "forward");
                     }
+                    break;
+                }
+
+                if (currentLine.endsWith("GET /lightOn")){
+                    turnOnLights();
+                    sendResponseToClient(client, "lightOn");
+                    break;
+                }
+
+                if (currentLine.endsWith("GET /lightOff")){
+                    turnOffLights();
+                    sendResponseToClient(client, "lightOff");
                     break;
                 }
 

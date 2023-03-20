@@ -8,22 +8,6 @@
         .flx{
             display: flex;
         }
-
-        .slider {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-            width: 500px;
-            height: 60px;
-            padding: 30px;
-            padding-left: 40px;
-            background: #fcfcfc;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0px 15px 40px #7E6D5766;
-        }
         .slider p {
             font-size: 26px;
             font-weight: 600;
@@ -32,21 +16,10 @@
             color: black;
         }
         .slider input[type="range"] {
-            /* -webkit-appearance:none !important; */
-            width: 420px;
-            height: 2px;
-            background: black;
-            border: none;
-            outline: none;
+            width: 420px;height: 2px;background: black;border: none;outline: none;
         }
         .slider input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none !important;
-            width: 30px;
-            height:30px;
-            background: black;
-            border: 2px solid black;
-            border-radius: 50%;
-            cursor: pointer;
+            -webkit-appearance: none !important;width: 30px;height:30px;background: black;border: 2px solid black;border-radius: 50%;cursor: pointer;
         }
         .slider input[type="range"]::-webkit-slider-thumb:hover {
             background: black;
@@ -79,10 +52,22 @@
             <span id="directionText">forward</span>
             <button id="changeDirection" onmouseup="directionChange()">Change Direction</button>
         </div>
+        <div style="text-align:center;">
+            <button id="light-on" onmouseup="turnLightON()">Light On</button>
+        </div>
+        <div style="text-align:center;">
+            <button id="light-off" onmouseup="turnLightOff()">Light Off</button>
+        </div>
 
         <script>
             const mainDescription = "Throttle Setting";
             const minimumThrottle = 45;
+            function sendGetReq(req){
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {};
+                xhttp.open("GET", req, true);
+                xhttp.send();
+            }
             function sendPosData(pos) {
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
@@ -95,7 +80,6 @@
                 xhttp.send();
             }
             function rangeValueChange(value) {
-                console.log("rangeValueChange", value);
                 document.getElementById("rangeValue").innerHTML = value;
                 sendPosData(value);
             }
@@ -111,6 +95,12 @@
             }
             function stop(){
                 sendPosData(0);
+            }
+            function turnLightON(){
+                sendGetReq('lightOn');
+            }
+            function turnLightOff(){
+                sendGetReq('lightOff');
             }
 
         </script>
