@@ -22,10 +22,11 @@ const int maxThrottle = 255;
 const int offSet = 0;
 const int initialThrottlePos = 0;
 
-const int IN1 = D0;
-const int IN2 = D1;
-const int EN1 = D2;
-const int EN2 = D3;
+const int RPWM = D1;
+const int LPWM = D2;
+const int R_EN = D3;
+const int L_EN = D4;
+const int alwaysHigh = D5;
 
 bool dir = false;
 
@@ -51,22 +52,27 @@ void setThrottlePosition(int targetPos){ // throttle position 1 to 11
     }
     Serial.println("setThrottlePosition");
     Serial.println(targetPos);
-    int targetPin = IN1;
+    int targetPin = RPWM;
+    int downPin = LPWM;
     if (dir){
-        targetPin = IN2;
+        targetPin = LPWM;
+        downPin = RPWM;
     } else {
-        targetPin = IN1;
+        targetPin = RPWM;
+        downPin = LPWM;
     }
     if (throttlePos > targetPos){
         while (throttlePos != targetPos){
             stepDownThrottle();
             analogWrite(targetPin, throttlePos);
+            analogWrite(downPin, 0);
             delay(decceleration);
         }
     } else {
         while (throttlePos != targetPos){
             stepUpThrottle();
             analogWrite(targetPin, throttlePos);
+            analogWrite(downPin, 0);
             delay(acceleration);
         }
     }
@@ -87,19 +93,17 @@ void handleDirection(){
 
 //================================================
 void handleThrottle(){
-  String POS = server.arg("throttlePOS");
-  int pos = POS.toInt();
-  pos = pos + offSet;
-  //limit pos
-  if (pos > maxThrottle){
-    pos = maxThrottle;
-  } else if (pos < 0){
-    pos = 0;
-  }
-  setThrottlePosition(pos);
-  digitalWrite(LED,!(digitalRead(LED))); //Toggle LED
-//   server.send(200, "text/plane","");
-  server.send(200, "text/plane", String(pos));
+    String POS = server.arg("throttlePOS");
+    int pos = POS.toInt();
+    pos = pos + offSet;
+    //limit pos
+    if (pos > maxThrottle){
+        pos = maxThrottle;
+    } else if (pos < 0){
+        pos = 0;
+    }
+    setThrottlePosition(pos);
+    server.send(200, "text/plane", String(pos));
 }
 
 void handleRoot() {
@@ -114,7 +118,14 @@ void setup() {
   delay(1000);
   Serial.begin(115200);
   Serial.println();
-
+  pinMode(RPWM, OUTPUT);
+  pinMode(LPWM, OUTPUT);
+  pinMode(R_EN, OUTPUT);
+  pinMode(L_EN, OUTPUT);
+  pinMode(alwaysHigh, OUTPUT);
+  digitalWrite(alwaysHigh, HIGH);
+  digitalWrite(R_EN, HIGH);
+  digitalWrite(L_EN, HIGH);
   pinMode(LED,OUTPUT);
   
   //Connect to wifi Network
@@ -137,10 +148,8 @@ void setup() {
   //Initialize Webserver
   server.on("/",handleRoot);
   server.on("/setPOS",handleThrottle); //Sets servo position from Web request
-  server.on("/setDIR",handleDirection);
+  server.on("/setDir",handleDirection);
   server.begin();
-  digitalWrite(EN1, HIGH);
-  digitalWrite(EN2, HIGH);
 }
 
 //================================================
